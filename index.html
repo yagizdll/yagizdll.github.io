@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Malware Sunumu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0d12;
+    --panel: #121821;
+    --line: #1f2a37;
+    --text: #e6edf3;
+    --muted: #8b98a8;
+    --accent: #ff3b5c;
+    --accent2: #39ff9f;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+    --sans: "Space Grotesk", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 48px 48px;
+    background-position: -1px -1px;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 30%, var(--bg) 80%);
+  }
+
+  .slide {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 6vh 8vw;
+    opacity: 0; visibility: hidden;
+    transform: translateY(24px);
+    transition: opacity .5s ease, transform .5s ease, visibility .5s;
+  }
+  .slide.active { opacity: 1; visibility: visible; transform: none; }
+
+  .tag {
+    font-family: var(--mono); font-size: clamp(12px, 1.2vw, 16px);
+    color: var(--accent2); letter-spacing: .1em; text-transform: uppercase;
+    margin-bottom: 2vh;
+  }
+  .tag::before { content: "> "; color: var(--muted); }
+  h1 { font-size: clamp(48px, 9vw, 140px); line-height: .95; font-weight: 700; letter-spacing: -.03em; }
+  h2 { font-size: clamp(32px, 5vw, 72px); line-height: 1; font-weight: 700; letter-spacing: -.02em; margin-bottom: 5vh; }
+  .red { color: var(--accent); }
+  .green { color: var(--accent2); }
+  .sub { color: var(--muted); font-size: clamp(16px, 1.8vw, 26px); margin-top: 3vh; }
+
+  /* Başlık */
+  .glitch { position: relative; display: inline-block; }
+  .glitch::after {
+    content: attr(data-text); position: absolute; left: 3px; top: 0;
+    color: var(--accent2); opacity: .5; mix-blend-mode: screen;
+    animation: glitch 3s infinite steps(1);
+  }
+  @keyframes glitch {
+    0%, 90%, 100% { clip-path: inset(0 0 100% 0); }
+    92% { clip-path: inset(20% 0 50% 0); transform: translateX(-6px); }
+    95% { clip-path: inset(60% 0 10% 0); transform: translateX(6px); }
+  }
+
+  /* Malware nedir */
+  .word {
+    font-family: var(--mono); font-size: clamp(40px, 8vw, 120px); font-weight: 700;
+    letter-spacing: -.02em;
+  }
+  .word .dim { color: #2c3846; }
+  .split { display: flex; gap: 4vw; margin-top: 4vh; flex-wrap: wrap; }
+  .split div { font-family: var(--mono); font-size: clamp(16px, 2vw, 28px); color: var(--muted); }
+  .split b { color: var(--text); }
+  .def {
+    margin-top: 6vh; padding-left: 20px; border-left: 3px solid var(--accent);
+    font-size: clamp(18px, 2.2vw, 32px); max-width: 900px;
+  }
+
+  /* Kart gridi */
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(4, 1fr); }
+  .grid.three { grid-template-columns: repeat(3, 1fr); }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: clamp(14px, 2vw, 26px);
+    opacity: 0; transform: translateY(12px);
+    transition: opacity .4s ease, transform .4s ease, border-color .2s;
+  }
+  .slide.active .card { opacity: 1; transform: none; }
+  .slide.active .card:nth-child(2) { transition-delay: .06s; }
+  .slide.active .card:nth-child(3) { transition-delay: .12s; }
+  .slide.active .card:nth-child(4) { transition-delay: .18s; }
+  .slide.active .card:nth-child(5) { transition-delay: .24s; }
+  .slide.active .card:nth-child(6) { transition-delay: .30s; }
+  .slide.active .card:nth-child(7) { transition-delay: .36s; }
+  .slide.active .card:nth-child(8) { transition-delay: .42s; }
+  .card:hover { border-color: var(--accent); }
+  .card .ico { font-family: var(--mono); color: var(--accent); font-size: clamp(12px, 1.1vw, 15px); margin-bottom: 10px; }
+  .card h3 { font-size: clamp(18px, 2vw, 30px); margin-bottom: 6px; }
+  .card p { color: var(--muted); font-size: clamp(13px, 1.25vw, 18px); line-height: 1.35; }
+
+  /* Kod karşılaştırma */
+  .code-wrap { display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px; align-items: center; }
+  .code {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 24px; font-family: var(--mono); font-size: clamp(13px, 1.4vw, 20px);
+    word-break: break-all; line-height: 1.5;
+  }
+  .code .label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 12px; letter-spacing: .1em; }
+  .arrow { font-family: var(--mono); font-size: 36px; color: var(--accent); }
+  .k { color: #c792ea; } .s { color: var(--accent2); }
+
+  /* Koruma listesi */
+  .checks { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 18px 4vw; }
+  .checks li { font-size: clamp(18px, 2.2vw, 32px); display: flex; gap: 14px; align-items: baseline; }
+  .checks li::before { content: "[✓]"; font-family: var(--mono); color: var(--accent2); font-size: .7em; }
+
+  /* Navigasyon */
+  .progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); transition: width .4s ease; z-index: 10; }
+  .hud {
+    position: fixed; bottom: 20px; right: 28px; z-index: 10;
+    display: flex; gap: 10px; align-items: center;
+    font-family: var(--mono); font-size: 13px; color: var(--muted);
+  }
+  .hud button {
+    background: var(--panel); color: var(--text); border: 1px solid var(--line);
+    width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 16px;
+  }
+  .hud button:hover { border-color: var(--accent); }
+  .brand { position: fixed; bottom: 26px; left: 28px; font-family: var(--mono); font-size: 13px; color: var(--muted); z-index: 10; }
+
+  @media (max-width: 800px) {
+    .slide { padding: 8vh 16px 80px; justify-content: flex-start; overflow-y: auto; }
+    .grid, .grid.three { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .code-wrap { grid-template-columns: 1fr; }
+    .arrow { transform: rotate(90deg); justify-self: center; }
+    .checks { grid-template-columns: 1fr; }
+    .brand { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<!-- 1. Kapak -->
+<section class="slide">
+  <div class="tag">siber güvenlik sunumu</div>
+  <h1 class="glitch" data-text="MALWARE">MAL<span class="red">WARE</span></h1>
+  <p class="sub">Zararlı yazılımlar, türleri ve analizden kaçınma teknikleri</p>
+</section>
+
+<!-- 2. Malware nedir -->
+<section class="slide">
+  <div class="tag">01 — tanım</div>
+  <h2>Malware nedir?</h2>
+  <div class="word"><span class="red">MAL</span><span class="dim">icious</span> soft<span class="red">WARE</span></div>
+  <div class="split">
+    <div><b>malicious</b> → kötü niyetli</div>
+    <div><b>software</b> → yazılım</div>
+  </div>
+  <p class="def">Bir sisteme <span class="red">zarar vermek</span>, veri çalmak veya <span class="red">izinsiz erişim</span> sağlamak için yazılmış her türlü yazılım.</p>
+</section>
+
+<!-- 3. Türler -->
+<section class="slide">
+  <div class="tag">02 — türler</div>
+  <h2>Malware türleri</h2>
+  <div class="grid">
+    <div class="card"><div class="ico">01</div><h3>Virüs</h3><p>Başka dosyalara bulaşır, çalıştırılınca yayılır.</p></div>
+    <div class="card"><div class="ico">02</div><h3>Solucan</h3><p>Worm. Kullanıcı olmadan ağ üzerinden kendini kopyalar.</p></div>
+    <div class="card"><div class="ico">03</div><h3>Truva Atı</h3><p>Trojan. Masum bir program gibi görünür.</p></div>
+    <div class="card"><div class="ico">04</div><h3>Fidye Yazılımı</h3><p>Ransomware. Dosyaları şifreler, fidye ister.</p></div>
+    <div class="card"><div class="ico">05</div><h3>Casus Yazılım</h3><p>Spyware. Gizlice izler, veri toplar.</p></div>
+    <div class="card"><div class="ico">06</div><h3>Keylogger</h3><p>Klavye vuruşlarını kaydeder, şifre çalar.</p></div>
+    <div class="card"><div class="ico">07</div><h3>Rootkit</h3><p>Sistemin derinine gizlenir, varlığını saklar.</p></div>
+    <div class="card"><div class="ico">08</div><h3>Botnet</h3><p>Ele geçirilmiş cihazlar uzaktan yönetilir.</p></div>
+  </div>
+</section>
+
+<!-- 4. Bulaşma yolları -->
+<section class="slide">
+  <div class="tag">03 — saldırı vektörleri</div>
+  <h2>Nasıl <span class="red">bulaşır?</span></h2>
+  <div class="grid three">
+    <div class="card"><div class="ico">@</div><h3>Phishing</h3><p>Sahte e-posta ve zararlı ekler.</p></div>
+    <div class="card"><div class="ico">↓</div><h3>Drive-by Download</h3><p>Siteyi ziyaret etmek yeterli.</p></div>
+    <div class="card"><div class="ico">⌁</div><h3>USB / Fiziksel</h3><p>Bulaşmış taşınabilir bellekler.</p></div>
+    <div class="card"><div class="ico">!</div><h3>Yazılım Açıkları</h3><p>Güncellenmemiş sistemler (exploit).</p></div>
+    <div class="card"><div class="ico">⛓</div><h3>Tedarik Zinciri</h3><p>Güvenilen yazılımın güncellemesine sızma.</p></div>
+    <div class="card"><div class="ico">⚠</div><h3>Korsan Yazılım</h3><p>Crack'li programlara gömülü malware.</p></div>
+  </div>
+</section>
+
+<!-- 5. Analizden kaçınma -->
+<section class="slide">
+  <div class="tag">04 — evasion</div>
+  <h2>Analizden <span class="red">kaçınma</span></h2>
+  <div class="grid three">
+    <div class="card"><div class="ico">{ }</div><h3>Obfuscation</h3><p>Kodu okunmaz hale getirip gizlemek.</p></div>
+    <div class="card"><div class="ico">[■]</div><h3>Packing</h3><p>Asıl kodu sıkıştırıp şifreler, çalışınca açar.</p></div>
+    <div class="card"><div class="ico">∞</div><h3>Polimorfizm</h3><p>Her bulaşmada imzasını değiştirir.</p></div>
+    <div class="card"><div class="ico">VM</div><h3>Anti-VM / Sandbox</h3><p>Sanal ortamı fark edince uslu durur.</p></div>
+    <div class="card"><div class="ico">dbg</div><h3>Anti-Debug</h3><p>Debugger bağlıysa davranışını değiştirir.</p></div>
+    <div class="card"><div class="ico">RAM</div><h3>Fileless</h3><p>Diske yazmaz, sadece bellekte çalışır.</p></div>
+  </div>
+</section>
+
+<!-- 6. Obfuscation örneği -->
+<section class="slide">
+  <div class="tag">05 — örnek</div>
+  <h2>Obfuscation <span class="green">nasıl görünür?</span></h2>
+  <div class="code-wrap">
+    <div class="code">
+      <span class="label">ORİJİNAL</span>
+      <span class="k">print</span>(<span class="s">"Merhaba"</span>)
+    </div>
+    <div class="arrow">→</div>
+    <div class="code">
+      <span class="label">OBFUSCATED</span>
+      <span class="k">exec</span>(__import__(<span class="s">'base64'</span>).b64decode(<span class="s">'cHJpbnQoIk1lcmhhYmEiKQ=='</span>))
+    </div>
+  </div>
+  <p class="sub">Aynı iş, ama imza tabanlı antivirüsler ve insan gözü için tanınmaz.</p>
+</section>
+
+<!-- 7. Korunma -->
+<section class="slide">
+  <div class="tag">06 — savunma</div>
+  <h2>Nasıl <span class="green">korunuruz?</span></h2>
+  <ul class="checks">
+    <li>Sistemleri güncel tut</li>
+    <li>Bilinmeyen eklere tıklama</li>
+    <li>Antivirüs / EDR kullan</li>
+    <li>Düzenli yedek al</li>
+    <li>Güçlü şifre + 2FA</li>
+    <li>Lisanslı yazılım kullan</li>
+  </ul>
+</section>
+
+<!-- 8. Kapanış -->
+<section class="slide">
+  <div class="tag">eof</div>
+  <h1>Teşekkürler<span class="red">.</span></h1>
+  <p class="sub">Sorular?</p>
+</section>
+
+<div class="brand">malware.sunum</div>
+<div class="hud">
+  <button id="prev" aria-label="Önceki">‹</button>
+  <span id="count">1 / 8</span>
+  <button id="next" aria-label="Sonraki">›</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const count = document.getElementById('count');
+  const progress = document.getElementById('progress');
+  let i = 0;
+
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, k) => s.classList.toggle('active', k === i));
+    count.textContent = (i + 1) + ' / ' + slides.length;
+    progress.style.width = ((i + 1) / slides.length * 100) + '%';
+    history.replaceState(null, '', '#' + (i + 1));
+  }
+
+  document.getElementById('next').onclick = () => show(i + 1);
+  document.getElementById('prev').onclick = () => show(i - 1);
+
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); show(i + 1); }
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); show(i - 1); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+    else if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+  });
+
+  let startX = null;
+  document.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    if (startX === null) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 50) show(i + (dx < 0 ? 1 : -1));
+    startX = null;
+  });
+
+  show((parseInt(location.hash.slice(1)) || 1) - 1);
+</script>
+</body>
+</html>
