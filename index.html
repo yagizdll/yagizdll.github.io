@@ -88,6 +88,7 @@
   /* Kart gridi */
   .grid { display: grid; gap: 16px; grid-template-columns: repeat(4, 1fr); }
   .grid.three { grid-template-columns: repeat(3, 1fr); }
+  .grid.five { grid-template-columns: repeat(5, 1fr); }
   .card {
     background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
     padding: clamp(14px, 2vw, 26px);
@@ -102,6 +103,8 @@
   .slide.active .card:nth-child(6) { transition-delay: .30s; }
   .slide.active .card:nth-child(7) { transition-delay: .36s; }
   .slide.active .card:nth-child(8) { transition-delay: .42s; }
+  .slide.active .card:nth-child(9) { transition-delay: .48s; }
+  .slide.active .card:nth-child(10) { transition-delay: .54s; }
   .card:hover { border-color: var(--accent); }
   .card .ico { font-family: var(--mono); color: var(--accent); font-size: clamp(12px, 1.1vw, 15px); margin-bottom: 10px; }
   .card h3 { font-size: clamp(18px, 2vw, 30px); margin-bottom: 6px; }
@@ -139,7 +142,7 @@
 
   @media (max-width: 800px) {
     .slide { padding: 8vh 16px 80px; justify-content: flex-start; overflow-y: auto; }
-    .grid, .grid.three { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .grid, .grid.three, .grid.five { grid-template-columns: 1fr 1fr; gap: 10px; }
     .code-wrap { grid-template-columns: 1fr; }
     .arrow { transform: rotate(90deg); justify-self: center; }
     .checks { grid-template-columns: 1fr; }
@@ -174,7 +177,7 @@
 <section class="slide">
   <div class="tag">02 — türler</div>
   <h2>Malware türleri</h2>
-  <div class="grid">
+  <div class="grid five">
     <div class="card"><div class="ico">01</div><h3>Virüs</h3><p>Başka dosyalara bulaşır, çalıştırılınca yayılır.</p></div>
     <div class="card"><div class="ico">02</div><h3>Solucan</h3><p>Worm. Kullanıcı olmadan ağ üzerinden kendini kopyalar.</p></div>
     <div class="card"><div class="ico">03</div><h3>Truva Atı</h3><p>Trojan. Masum bir program gibi görünür.</p></div>
@@ -183,6 +186,8 @@
     <div class="card"><div class="ico">06</div><h3>Keylogger</h3><p>Klavye vuruşlarını kaydeder, şifre çalar.</p></div>
     <div class="card"><div class="ico">07</div><h3>Rootkit</h3><p>Sistemin derinine gizlenir, varlığını saklar.</p></div>
     <div class="card"><div class="ico">08</div><h3>Botnet</h3><p>Ele geçirilmiş cihazlar uzaktan yönetilir.</p></div>
+    <div class="card"><div class="ico">09</div><h3>Dropper</h3><p>Asıl zararlıyı içinde taşır, diske bırakıp çalıştırır.</p></div>
+    <div class="card"><div class="ico">10</div><h3>Loader</h3><p>Asıl zararlıyı internetten indirip belleğe yükler.</p></div>
   </div>
 </section>
 
